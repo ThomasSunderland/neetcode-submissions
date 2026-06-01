@@ -1,0 +1,53 @@
+class Solution {
+    fun calPoints(operations: Array<String>): Int {
+        // ["5","-2","4","C","D","9","+","+"]
+        // [5, -2, -4, 9, 5, 14] = 27
+        val operationStack = mutableListOf<Int>()
+
+        for (operation in operations) {
+            when(operation) {
+                "C" -> {
+                    operationStack.popOperation()
+                    //println("$operation " + operationStack.joinToString())
+                }
+                "D" -> {
+                    operationStack.peekOperation()?.let {
+                        operationStack.pushOperation(it * 2)
+                    }
+                    //println("$operation " + operationStack.joinToString())
+                }
+                "+" -> {
+                    val previousOperation1 = operationStack.peekOperation()
+                    val previousOperation2 = operationStack.peekOperation(pointer = 2)
+
+                    if (previousOperation1 != null && previousOperation2 != null) {
+                        operationStack.pushOperation(previousOperation1 + previousOperation2)
+                    }
+                    //println("$operation " + operationStack.joinToString())
+                }                
+                else -> {
+                    operationStack.pushOperation(operation.toInt())
+                    //println("$operation " + operationStack.joinToString())
+                }
+            }
+        }
+
+        return operationStack.sum()
+    }
+
+    private fun MutableList<Int>.pushOperation(operation: Int) {
+        add(operation)
+    }
+
+    private fun MutableList<Int>.popOperation(): Int? {
+        if (isEmpty()) return null
+        return removeAt(size - 1)
+    }
+
+    private fun MutableList<Int>.peekOperation(
+        pointer: Int = 1,
+    ): Int? {
+        if (isEmpty() || size - pointer < 0) return null
+        return this[size - pointer]
+    }
+}
